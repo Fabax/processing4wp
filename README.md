@@ -14,7 +14,7 @@ dowload the plugin into worpdress plugins folder and activate it in wordpress ad
 * provide a simple template to presente your sketch ( title , author name, author website )description)
 
 ##How to use 
-### Simple exmample
+### Simple example
 
 ### Enable responsivness
 

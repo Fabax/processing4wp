@@ -36,7 +36,7 @@ class FB_Processing_Post_Type{
 			),
 			'public' => true,
 			'menu_position' => 5,
-			'menu_icon' => content_url(). '/plugins/processing-for-wordpress/img/icon.png',
+			'menu_icon' => content_url(). '/plugins/processing-for-wordpress/img/icon-grey.png',
 			'supports' => array(
 				'title',
 				'thumbnail',
