@@ -10,9 +10,10 @@ License: A "Slug" license name e.g. GPL2
 */
 
 class FB_Processing_Post_Type{
-	public function __construct(){
+	public function __construct(){	
 		$this->register_post_type();
 		$this->metaboxes();
+
 	}
 
 	public function register_post_type(){
@@ -101,27 +102,31 @@ class FB_Processing_Post_Type{
 			}
 			//display the form
 			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-			$html .='<input type="text" id="fb_sketch_title_good" name="fb_sketch_title_good" value="'.get_post_meta($post->ID,'fb_sketch_title_good',true ).'">';
-			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
+				$html .='<input type="text" id="fb_sketch_title_good" name="fb_sketch_title_good" value="'.get_post_meta($post->ID,'fb_sketch_title_good',true ).'">';
+				$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
+
 
 			echo $html;
 		}
 		function fb_save_infos_sketch_uploads($id){
+
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
 
 				if(isset($_POST['fb_sketch_title_good']) && 0 < count(strlen(trim($_POST['fb_sketch_title_good'])))){
 					$fb_sketch_title_good = stripcslashes(strip_tags($_POST['fb_sketch_title_good']));
 					update_post_meta($id,'fb_sketch_title_good',strip_tags($_POST['fb_sketch_title_good']));
 				}
-
 				//upload happens here
 				$zipFile = $_FILES['fb_zip_file'];
+
 				if(isset($zipFile) && ! empty($zipFile)){
 					//check if file is a zip
 					if(fb_is_valid_zip($zipFile['name'])){
-						$response = wp_upload_bits($zipFile['name'],null,file_get_contents($zipFile)); 
+						$response = wp_upload_bits($zipFile['name'],null,file_get_contents($zipFile['tmp_name'])); 
 						if(0 == strlen(trim($response['error']))){
 							update_post_meta($id,'zip',$response['url']);
+							$url = get_home_path() . 'wp-content/uploads/sketches/';
+							fb_unzip($zipFile['tmp_name'], $url);
 						}
 					}else{
 						update_post_meta($id,'zip','invalid-file-name');
@@ -149,6 +154,18 @@ class FB_Processing_Post_Type{
 			return ! ($isAutoSave || $isRevision) && $isValidNonce;
 		}
 
+		function fb_unzip($zipFile,$newFolderLocation){
+			$zip = new ZipArchive;
+			$res = $zip->open($zipFile);
+
+			if(!is_int($res)){
+    			$zip->extractTo($newFolderLocation);
+		    	$zip->close();
+			} else {
+		    	echo 'failed'.$zipFile.'  /  '.$newFolderLocation;
+			}
+		}
+		
 		//function i have to get rid off ----------------------------
 		function fb_display_dowload_link(){
 			$html = "";
@@ -174,7 +191,7 @@ class FB_Processing_Post_Type{
 }
 
 function fb_add_admin_script(){
-	wp_enqueue_script('fb_admin', plugins_url('processing-manager/js/admin.js'));
+	wp_enqueue_script('fb_admin', plugins_url('processing-for-wordpress/js/admin.js'));
 }
 
 function fb_init(){
@@ -182,6 +199,7 @@ function fb_init(){
 	include dirname(__FILE__) . '/processing-for-wordpress-shortcode.php';
 	include dirname(__FILE__) . '/add-processing.php';
 	include dirname(__FILE__) . '/processing-for-wordpress-admin-page.php';
+
 }
 
 add_action('admin_enqueue_scripts','fb_add_admin_script');
