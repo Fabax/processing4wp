@@ -17,10 +17,13 @@ dowload the plugin into worpdress plugins folder and activate it in wordpress ad
 ### Simple example
 
 ### Enable responsivness
+replace the size() function normaly located in your sketch setup by 
+jProcessingJS(this);
+
 
 ### show all the sketches per author
 
 
 ##Special thanks 
-Thank you to Gildas Paubert for providing JProcessing.js (http://www.gildasp.fr/)
+Thank you to Gildas Paubert for providing JProcessing.js (https://github.com/GildasP/jProcessingJS)
 
