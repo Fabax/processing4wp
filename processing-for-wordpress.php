@@ -166,20 +166,7 @@ class FB_Processing_Post_Type{
 			}
 		}
 		
-		//function i have to get rid off ----------------------------
-		function fb_display_dowload_link(){
-			$html = "";
-			if('invalid-file-name' != get_post_meta(get_the_id(),'zip',true)){
-				$html .= '<a download="'.get_post_meta(get_the_id(),'zip',true ).'" href="'.get_post_meta(get_the_id(),'zip',true ).'">';
-					$html .= 'dowload the sketch';
-				$html .= '</a>';
-			}
-			return $html;
-		}
-
 		//All the action thing ----------------------------
-
-		add_action('the_content','fb_display_dowload_link');
 		//link metaboxes to the wordpress admin 		
 		add_action('add_meta_boxes', 'fb_add_sketch_options_metabox');
 		add_action('save_post','fb_save_infos_sketch_options' );

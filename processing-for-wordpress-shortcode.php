@@ -25,7 +25,7 @@ add_shortcode('processing', function($args){
 				$sketch_title = get_the_title($query->ID);
 				$sketch_content = get_the_content();
 
-				$fb_file_paths = WP_PLUGIN_DIR . '/processing-for-wordpress/sketches/'.$title.'/';
+				$fb_file_paths = 'wp-content/uploads/sketches/'.$title.'/';
 
 				if (is_dir($fb_file_paths)) {
 					
@@ -34,7 +34,7 @@ add_shortcode('processing', function($args){
 				        	if ($file != "." && $file != ".." ) {
 				        		$ext = pathinfo($file, PATHINFO_EXTENSION);
 				        		if($ext == 'pde'){
-				        			$sketch_path .= 'wp-content/plugins/processing-for-wordpress/sketches/'.$title.'/'.$file . " ";
+				        			$sketch_path .= $fb_file_paths.$file . " ";
 				        		}
 				        	}
 				        }
