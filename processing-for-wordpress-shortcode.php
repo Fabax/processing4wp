@@ -17,13 +17,14 @@ add_shortcode('processing', function($args){
 				$post = get_post_custom($query->ID);
 
 				//Variables that affect the canvas
-				$title = $post['fb_sketch_title'][0];
+				$title = $sketch_title;
 				$width = $post['fb_sketch_width'][0];
 				$height = $post['fb_sketch_height'][0];
 				$author = $post['fb_sketch_author'][0];
 				$author_website = $post['fb_sketch_author_website'][0];
 				$sketch_title = get_the_title($query->ID);
 				$sketch_content = get_the_content();
+				
 
 				$fb_file_paths = 'wp-content/uploads/sketches/'.$title.'/';
 
@@ -41,12 +42,16 @@ add_shortcode('processing', function($args){
 				        closedir($dh);
 				    }
 				}
-
-				$output .='<h3>'.$sketch_title.'</h3>';
+									
 				$output .= '<canvas id="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
-				$output .='<h4>Description</h4>';
-				$output .='<p>'.$sketch_content.'</p>';
-				$output .='<p> Developed by : <a target="blank" href="'.$author_website.'">'.$author.'</a></p>';
+				if($author != ""){
+					$output .='<p> <b>'.$sketch_title.'</b> developed by : <a target="blank" href="'.$author_website.'">'.$author.'</a></p>';
+				}
+				if($sketch_content != ""){
+					$output .='<p><b>Description </b>: '.$sketch_content.'</p>';
+				}
+				
+				
 			}
 		}
 	}

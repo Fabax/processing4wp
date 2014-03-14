@@ -68,18 +68,16 @@ class FB_Processing_Post_Type{
 			$title = get_post_meta($post->ID, 'fb_sketch_title', true);
 			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
 			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
+			$checkbox = get_post_meta($post->ID, 'fb_display_sketch_infos', true);
 			?>
 			<p>
-
-				<label for="fb_sketch_title" >title: </label>
-				<input type="text" class="widefat" name="fb_sketch_title" id="fb_sketch_title" value="<?php echo $title; ?>"/>
-				<label for="fb_sketch_author">author: </label>
+				<label for="fb_sketch_author">author </label>
 				<input type="text" class="widefat" name="fb_sketch_author" id="fb_sketch_author" value="<?php echo $author; ?>"/>
-				<label for="fb_sketch_width">author website: </label>
+				<label for="fb_sketch_width">author website </label>
 				<input type="text" class="widefat" name="fb_sketch_author_website" id="fb_sketch_author_website" value="<?php echo $author_website; ?>"/>
-				<label for="fb_sketch_width">width: </label>
+				<label for="fb_sketch_width">width </label>
 				<input type="text" class="widefat" name="fb_sketch_width" id="fb_sketch_width" value="<?php echo $width; ?>"/>
-				<label for="fb_sketch_height">Height: </label>
+				<label for="fb_sketch_height">Height </label>
 				<input type="text" class="widefat" name="fb_sketch_height" id="fb_sketch_height" value="<?php echo $height; ?>"/>
 			</p>
 			<?php
@@ -102,8 +100,7 @@ class FB_Processing_Post_Type{
 			}
 			//display the form
 			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-				$html .='<input type="text" id="fb_sketch_title_good" name="fb_sketch_title_good" value="'.get_post_meta($post->ID,'fb_sketch_title_good',true ).'">';
-				$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
+			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 
 
 			echo $html;
