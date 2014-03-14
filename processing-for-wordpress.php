@@ -165,6 +165,23 @@ class FB_Processing_Post_Type{
 		    	echo 'failed'.$zipFile.'  /  '.$newFolderLocation;
 			}
 		}
+
+		// ADD NEW COLUMN
+		function fb_columns_head($defaults) {
+		    $defaults['shortcode'] = 'shortcode';
+		    return $defaults;
+		}
+		 
+		// SHOW THE FEATURED IMAGE
+		function fb_columns_content($column_name, $post_ID) {
+		    if ($column_name == 'shortcode') {
+		    	$title = get_post_meta($post_ID, 'fb_sketch_title', true);
+		    	echo $shortcode = '[processing sketch="'.$title.'"]';
+		    }
+		}
+		//----------------------
+		add_filter('manage_posts_columns', 'fb_columns_head');
+		add_action('manage_posts_custom_column', 'fb_columns_content', 10, 2);
 		
 		//All the action thing ----------------------------
 		//link metaboxes to the wordpress admin 		
