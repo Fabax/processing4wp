@@ -123,7 +123,7 @@ class FB_Processing_Post_Type{
 						if(0 == strlen(trim($response['error']))){
 							update_post_meta($id,'zip',$response['url']);
 							$url = get_home_path() . 'wp-content/uploads/sketches/';
-							fb_unzip($zipFile['tmp_name'], $url);
+							fb_unzip($zipFile, $url);
 						}
 					}else{
 						update_post_meta($id,'zip','invalid-file-name');
@@ -140,7 +140,6 @@ class FB_Processing_Post_Type{
 			if('zip' == strtolower($path_parts['extension'])){
 				$response = true;
 			}
-
 			return $response;
 		}
 		//helper that check if the user is entitled to do stuff pretty much
@@ -152,15 +151,23 @@ class FB_Processing_Post_Type{
 		}
 
 		function fb_unzip($zipFile,$newFolderLocation){
+			$fileToUnzip = $zipFile['tmp_name'];
+
 			$zip = new ZipArchive;
-			$res = $zip->open($zipFile);
+			$res = $zip->open($fileToUnzip);
 
 			if(!is_int($res)){
     			$zip->extractTo($newFolderLocation);
 		    	$zip->close();
-			} else {
-		    	echo 'failed'.$zipFile.'  /  '.$newFolderLocation;
-			}
+		    	$path = wp_upload_dir();
+		    	$path = $path['path'];
+		    	$pathToZip = $path.'/'.$zipFile['name'];
+
+		    	if(file_exists($pathToZip)){
+				    unlink($pathToZip);
+				}
+			} 
+		
 		}
 
 		// ADD NEW COLUMN
