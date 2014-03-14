@@ -17,9 +17,15 @@ dowload the plugin into worpdress plugins folder and activate it in wordpress ad
 ### Simple example
 
 ### Enable responsivness
-replace the size() function normaly located in your sketch setup by 
+replace the size function, ex : 
+```
+size(200;200); 
+```
+function normaly located in your sketch setup by 
 
-jProcessingJS(this);
+```
+ jProcessingJS(this);
+```
 
 
 ### show all the sketches per author
