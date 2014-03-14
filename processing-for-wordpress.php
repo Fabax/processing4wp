@@ -212,7 +212,7 @@ function fb_init(){
 	new FB_Processing_Post_Type();
 	include dirname(__FILE__) . '/processing-for-wordpress-shortcode.php';
 	include dirname(__FILE__) . '/add-processing.php';
-	include dirname(__FILE__) . '/processing-for-wordpress-admin-page.php';
+	//include dirname(__FILE__) . '/processing-for-wordpress-admin-page.php';
 
 }
 
