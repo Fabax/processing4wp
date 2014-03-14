@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Processing manager
+Plugin Name: Processing for wordpress
 Plugin URI: http://tutorpocessing.com
 Description: Processing maanger allow you to simply add and integrate processing sketches to your website.
 Version: 1.0
@@ -35,7 +35,7 @@ class FB_Processing_Post_Type{
 			),
 			'public' => true,
 			'menu_position' => 5,
-			'menu_icon' => content_url(). '/plugins/processing-manager/img/icon.png',
+			'menu_icon' => content_url(). '/plugins/processing-for-wordpress/img/icon.png',
 			'supports' => array(
 				'title',
 				'thumbnail',
@@ -179,9 +179,9 @@ function fb_add_admin_script(){
 
 function fb_init(){
 	new FB_Processing_Post_Type();
-	include dirname(__FILE__) . '/processing-manager-shortcode.php';
+	include dirname(__FILE__) . '/processing-for-wordpress-shortcode.php';
 	include dirname(__FILE__) . '/add-processing.php';
-	include dirname(__FILE__) . '/processing-manager-admin-page.php';
+	include dirname(__FILE__) . '/processing-for-wordpress-admin-page.php';
 }
 
 add_action('admin_enqueue_scripts','fb_add_admin_script');
