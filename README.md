@@ -1,7 +1,7 @@
 Processing For Wordpress
 ========================
 
-Processing for wordpress is a plugin that allow you to easily manage and include processing sketches into a wordpress post or page. It automaticly adds the right librairy for you and will offer differents features and templates to presente your création in a minimalist and elegant way
+Processing for wordpress is a plugin that allow you to easily manage and include processing sketches into a wordpress post or page. It automatically adds the right librairies for you and will offer different features and templates to presente your creation in a minimalist and elegant way.
 
 ##Installation
 dowload the plugin into the worpdress plugins folder and activate it in the wordpress admin page
@@ -25,16 +25,13 @@ dowload the plugin into the worpdress plugins folder and activate it in the word
 ```
 
 ### Enable size settings
-*replace the size function usualy in the setup() of the sketch by 
+* replace the size function usualy in the setup() of the sketch by 
 ```
  jProcessingJS(this);
 ```
-*you can then edit the width and the height of the sketch in the admin panel. It supports sizes in pixels as well as percentages
-*If you want to make you sketch responsive, make sure to set the width or the height to 100%
+* you can then edit the width and the height of the sketch in the admin panel. It supports sizes in pixels as well as percentages
+* If you want to make you sketch responsive, make sure to set the width or the height to 100%
+* For more informtions about the possibilities that offer Jprocessing.js please go to the official github page : https://github.com/GildasP/jProcessingJS
 
-
-##Special thanks 
-Thank you to Gildas Paubert for providing JProcessing.js (https://github.com/GildasP/jProcessingJS)
-
-##warning
-The function load image is not yet supported in this version as it is still a beta
+##It's still a beta 
+The function loadimage() is not yet well supported in this version as it is still a beta. I'm still working on it and it will be available very soon. 
