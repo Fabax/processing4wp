@@ -54,8 +54,7 @@ class FB_Processing_Post_Type{
 			add_meta_box('fb_sketch_height','Sketch Options', 'fb_display_sketch_option_form', 'fb_sketch', 'side');
 		}
 		function fb_save_infos_sketch_options($id){
-			if(isset($_POST['fb_sketch_title']) || isset($_POST['fb_sketch_height']) || isset($_POST['fb_sketch_width']) || isset($_POST['fb_sketch_author']) || isset($_POST['fb_sketch_author_website'])){
-				update_post_meta($id,'fb_sketch_title',strip_tags($_POST['fb_sketch_title']));
+			if(isset($_POST['fb_sketch_height']) || isset($_POST['fb_sketch_width']) || isset($_POST['fb_sketch_author']) || isset($_POST['fb_sketch_author_website'])){
 				update_post_meta($id,'fb_sketch_author',strip_tags($_POST['fb_sketch_author']));
 				update_post_meta($id,'fb_sketch_author_website',strip_tags($_POST['fb_sketch_author_website']));
 				update_post_meta($id,'fb_sketch_height',strip_tags($_POST['fb_sketch_height']));
@@ -65,7 +64,6 @@ class FB_Processing_Post_Type{
 		function fb_display_sketch_option_form($post){
 			$height = get_post_meta($post->ID, 'fb_sketch_height', true);
 			$width = get_post_meta($post->ID, 'fb_sketch_width', true);
-			$title = get_post_meta($post->ID, 'fb_sketch_title', true);
 			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
 			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
 			$checkbox = get_post_meta($post->ID, 'fb_display_sketch_infos', true);
@@ -179,8 +177,8 @@ class FB_Processing_Post_Type{
 		// SHOW THE FEATURED IMAGE
 		function fb_columns_content($column_name, $post_ID) {
 		    if ($column_name == 'shortcode') {
-		    	$title = get_post_meta($post_ID, 'fb_sketch_title', true);
-		    	echo $shortcode = '[processing sketch="'.$title.'"]';
+		    	$title = get_post_meta($post_ID, 'title', true);
+		    	echo $shortcode = '[processing sketch="'.get_the_title($post_ID).'"]';
 		    }
 		}
 
