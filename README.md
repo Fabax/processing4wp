@@ -9,24 +9,19 @@ dowload the plugin into worpdress plugins folder and activate it in wordpress ad
 ##Features
 * include processing.js librairy into the wordpress page
 * include Jprocessing.js librairy into the wordpress page (allow you to enable responsive, fullscreen and div overlay)
-* upload entire sketch forlder
+* upload entire sketch forlder 
 * generate shortcode that you can include anywhere in your wordpress
 * provide a simple template to presente your sketch ( title , author name, author website )description)
 
 ##How to use 
 ### Simple example
 
-### Enable responsivness
-replace the size function, ex : 
-```
-size(200;200); 
-```
-function normaly located in your sketch setup by 
-
+### Enable responsiveness
+replace the size function usualy in the setup() of the sketch by 
 ```
  jProcessingJS(this);
 ```
-
+Make sure to put the width and/or the height of the skecth at 100% in the admin panel
 
 ### show all the sketches per author
 
@@ -34,3 +29,5 @@ function normaly located in your sketch setup by
 ##Special thanks 
 Thank you to Gildas Paubert for providing JProcessing.js (https://github.com/GildasP/jProcessingJS)
 
+##warning
+The function load image is not yet supported in this version as it is still a beta
