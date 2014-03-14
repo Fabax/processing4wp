@@ -18,6 +18,7 @@ dowload the plugin into worpdress plugins folder and activate it in wordpress ad
 
 ### Enable responsivness
 replace the size() function normaly located in your sketch setup by 
+
 jProcessingJS(this);
 
 
