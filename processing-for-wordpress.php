@@ -176,6 +176,14 @@ class FB_Processing_Post_Type{
 		    	echo $shortcode = '[processing sketch="'.$title.'"]';
 		    }
 		}
+
+		// Remove Featured Image Metabox from Custom Post Type Edit Screens
+		function remove_image_box() {
+		 if ($current_user->user_level < 10){
+		   remove_meta_box('postimagediv','fb_sketch','side');
+		 }
+		}
+		add_action('do_meta_boxes', 'remove_image_box');
 		//----------------------
 		add_filter('manage_posts_columns', 'fb_columns_head');
 		add_action('manage_posts_custom_column', 'fb_columns_content', 10, 2);

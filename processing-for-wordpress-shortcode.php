@@ -25,7 +25,6 @@ add_shortcode('processing', function($args){
 				$sketch_title = get_the_title($query->ID);
 				$sketch_content = get_the_content();
 				
-
 				$fb_file_paths = 'wp-content/uploads/sketches/'.$title.'/';
 
 				if (is_dir($fb_file_paths)) {
@@ -49,9 +48,7 @@ add_shortcode('processing', function($args){
 				}
 				if($sketch_content != ""){
 					$output .='<p><b>Description </b>: '.$sketch_content.'</p>';
-				}
-				
-				
+				}			
 			}
 		}
 	}
