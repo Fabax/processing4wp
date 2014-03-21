@@ -9,15 +9,15 @@ add_shortcode('processing', function($args){
 		)
 	);
 
+
 	if($query->have_posts()){
 		while ($query->have_posts()) {
 			$query->the_post();
-			$sketch_title = get_the_title($query->ID);
-			if($sketch_title == $sketch){
-				$post = get_post_custom($query->ID);
+			$post = get_post_custom($query->ID);
 
+			if($post['fb_sketch_title'][0] == $sketch){
 				//Variables that affect the canvas
-				$title = $sketch_title;
+				$title = $post['fb_sketch_title'][0];
 				$width = $post['fb_sketch_width'][0];
 				$height = $post['fb_sketch_height'][0];
 				$author = $post['fb_sketch_author'][0];

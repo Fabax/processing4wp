@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Processing for wordpress
+Plugin Name: Processing for wordpress pro
 Plugin URI: http://tutorpocessing.com
 Description: Processing maanger allow you to simply add and integrate processing sketches to your website.
 Version: 1.0
@@ -36,7 +36,7 @@ class FB_Processing_Post_Type{
 			),
 			'public' => true,
 			'menu_position' => 5,
-			'menu_icon' => content_url(). '/plugins/processing-for-wordpress/img/icon-grey.png',
+			'menu_icon' => content_url(). '/plugins/processing4wp/img/icon-grey.png',
 			'supports' => array(
 				'title',
 				'thumbnail',
@@ -53,57 +53,18 @@ class FB_Processing_Post_Type{
 		function fb_add_sketch_options_metabox(){
 			add_meta_box('fb_sketch_height','Sketch Options', 'fb_display_sketch_option_form', 'fb_sketch', 'side');
 		}
+
 		function fb_save_infos_sketch_options($id){
+			if(isset($_POST['fb_sketch_title'])){
+
+			}
 			if(isset($_POST['fb_sketch_height']) || isset($_POST['fb_sketch_width']) || isset($_POST['fb_sketch_author']) || isset($_POST['fb_sketch_author_website'])){
+				update_post_meta($id,'fb_sketch_title',strip_tags($_POST['fb_sketch_title']));
 				update_post_meta($id,'fb_sketch_author',strip_tags($_POST['fb_sketch_author']));
 				update_post_meta($id,'fb_sketch_author_website',strip_tags($_POST['fb_sketch_author_website']));
 				update_post_meta($id,'fb_sketch_height',strip_tags($_POST['fb_sketch_height']));
 				update_post_meta($id,'fb_sketch_width',strip_tags($_POST['fb_sketch_width']));
 			}
-		}
-		function fb_display_sketch_option_form($post){
-			$height = get_post_meta($post->ID, 'fb_sketch_height', true);
-			$width = get_post_meta($post->ID, 'fb_sketch_width', true);
-			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
-			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
-			$checkbox = get_post_meta($post->ID, 'fb_display_sketch_infos', true);
-			?>
-			<p>
-				<label for="fb_sketch_author">author </label>
-				<input type="text" class="widefat" name="fb_sketch_author" id="fb_sketch_author" value="<?php echo $author; ?>"/>
-				<label for="fb_sketch_width">author website </label>
-				<input type="text" class="widefat" name="fb_sketch_author_website" id="fb_sketch_author_website" value="<?php echo $author_website; ?>"/>
-				<label for="fb_sketch_width">width </label>
-				<input type="text" class="widefat" name="fb_sketch_width" id="fb_sketch_width" value="<?php echo $width; ?>"/>
-				<label for="fb_sketch_height">Height </label>
-				<input type="text" class="widefat" name="fb_sketch_height" id="fb_sketch_height" value="<?php echo $height; ?>"/>
-			</p>
-			<?php
-		}
-	
-		//Code pour l'upload de fichiers ----------------------------
-		function fb_add_upload_metabox(){
-			add_meta_box('fb_sketch_uploads','Sketch Upload', 'fb_display_sketch_upload_form', 'fb_sketch', 'side');
-		}
-		function fb_display_sketch_upload_form($post){
-			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
-			$html ="";
-
-			//if the uploaded file is invalid, make a box apear
-			if('invalid-file-name' == get_post_meta($post->ID,'zip',true)){
-				$html .='<div id="invalid-file-name" class="error">';
-					$html .='<p>You are trying to upload a file other than a zip file</p>';
-				$html .='</div>';
-
-			}
-			//display the form
-			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
-
-
-			echo $html;
-		}
-		function fb_save_infos_sketch_uploads($id){
 
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
 
@@ -130,6 +91,43 @@ class FB_Processing_Post_Type{
 			}
 		}
 
+		function fb_display_sketch_option_form($post){
+			$html ="";
+			$title = get_post_meta($post->ID, 'fb_sketch_title', true);
+			$height = get_post_meta($post->ID, 'fb_sketch_height', true);
+			$width = get_post_meta($post->ID, 'fb_sketch_width', true);
+			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
+			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
+			$checkbox = get_post_meta($post->ID, 'fb_display_sketch_infos', true);
+
+			$html .='<label for="fb_sketch_title">*Title (same name as your zip file)</label>
+				<input type="text" class="widefat" name="fb_sketch_title" id="fb_sketch_title" value="'.$title.'"/>
+				<label for="fb_sketch_author">author </label>
+				<input type="text" class="widefat" name="fb_sketch_author" id="fb_sketch_author" value="'.$author.'"/>
+				<label for="fb_sketch_width">author website </label>
+				<input type="text" class="widefat" name="fb_sketch_author_website" id="fb_sketch_author_website" value="'.$author_website.'"/>
+				<label for="fb_sketch_width">width </label>
+				<input type="text" class="widefat" name="fb_sketch_width" id="fb_sketch_width" value="'.$width.'"/>
+				<label for="fb_sketch_height">Height </label>
+				<input type="text" class="widefat" name="fb_sketch_height" id="fb_sketch_height" value="'.$height.'"/>';
+	
+			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
+
+			//if the uploaded file is invalid, make a box apear
+			if('invalid-file-name' == get_post_meta($post->ID,'zip',true)){
+				$html .='<div id="invalid-file-name" class="error">';
+					$html .='<p>You are trying to upload a file other than a zip file</p>';
+				$html .='</div>';
+
+			}
+			//display the form
+			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
+			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
+
+
+			echo $html;
+		}
+	
 		//helpers ----------------------------
 		function fb_is_valid_zip($filename){
 			$path_parts = pathinfo($filename);
@@ -198,22 +196,20 @@ class FB_Processing_Post_Type{
 		add_action('add_meta_boxes', 'fb_add_sketch_options_metabox');
 		add_action('save_post','fb_save_infos_sketch_options' );
 
-		add_action('add_meta_boxes','fb_add_upload_metabox' );
-		add_action('save_post','fb_save_infos_sketch_uploads' );
+		//add_action('add_meta_boxes','fb_add_upload_metabox' );
+		//add_action('save_post','fb_save_infos_sketch_uploads' );
 	}
 
 }
 
 function fb_add_admin_script(){
-	wp_enqueue_script('fb_admin', plugins_url('processing-for-wordpress/js/admin.js'));
+	wp_enqueue_script('fb_admin', plugins_url('processing4wp-pro/js/admin.js'));
 }
 
 function fb_init(){
 	new FB_Processing_Post_Type();
-	include dirname(__FILE__) . '/processing-for-wordpress-shortcode.php';
+	include dirname(__FILE__) . '/processing4wp-shortcode.php';
 	include dirname(__FILE__) . '/add-processing.php';
-	//include dirname(__FILE__) . '/processing-for-wordpress-admin-page.php';
-
 }
 
 add_action('admin_enqueue_scripts','fb_add_admin_script');
