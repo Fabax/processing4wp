@@ -134,6 +134,7 @@ class FB_Processing_Post_Type{
 			?>
 			
 			<p>		 
+				<label>Display sketch informations</label><br>
 		        <label for="fb_display_options_checkbox-radio-one">
 		            <input type="radio" name="fb_display_options_checkbox" id="fb_display_options_checkbox-one" value="yes" <?php if ( isset ( $checkbox_display['fb_display_options_checkbox'] ) ) checked( $checkbox_display['fb_display_options_checkbox'][0], 'yes' ); ?>>
 		           <label for="checkbox">Yes </label>
@@ -204,6 +205,8 @@ class FB_Processing_Post_Type{
 		   remove_meta_box('postimagediv','fb_sketch','side');
 		 }
 		}
+
+
 		add_action('do_meta_boxes', 'remove_image_box');
 		//----------------------
 		add_filter('manage_posts_columns', 'fb_columns_head');
@@ -213,9 +216,6 @@ class FB_Processing_Post_Type{
 		//link metaboxes to the wordpress admin 		
 		add_action('add_meta_boxes', 'fb_add_sketch_options_metabox');
 		add_action('save_post','fb_save_infos_sketch_options' );
-
-		//add_action('add_meta_boxes','fb_add_upload_metabox' );
-		//add_action('save_post','fb_save_infos_sketch_uploads' );
 	}
 
 }
