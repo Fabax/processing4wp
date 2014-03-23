@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: Processing for wordpress pro
+Plugin Name: Processing for wordpress 
 Plugin URI: http://tutorpocessing.com
 Description: Processing maanger allow you to simply add and integrate processing sketches to your website.
 Version: 1.0
@@ -64,6 +64,7 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_sketch_author_website',strip_tags($_POST['fb_sketch_author_website']));
 				update_post_meta($id,'fb_sketch_height',strip_tags($_POST['fb_sketch_height']));
 				update_post_meta($id,'fb_sketch_width',strip_tags($_POST['fb_sketch_width']));
+				update_post_meta($id,'fb_display_options_checkbox', $_POST[ 'fb_display_options_checkbox' ] );
 			}
 
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
@@ -89,18 +90,22 @@ class FB_Processing_Post_Type{
 					}
 				}
 			}
+			
 		}
 
 		function fb_display_sketch_option_form($post){
+			$meta_element_class = get_post_meta($post->ID, 'fb_sketch_size_options_meta_box', true); //true ensures you get just one value instead of an array
 			$html ="";
 			$title = get_post_meta($post->ID, 'fb_sketch_title', true);
 			$height = get_post_meta($post->ID, 'fb_sketch_height', true);
 			$width = get_post_meta($post->ID, 'fb_sketch_width', true);
 			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
 			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
-			$checkbox = get_post_meta($post->ID, 'fb_display_sketch_infos', true);
+			$checkbox_display = get_post_meta( $post->ID );
+			
 
-			$html .='<label for="fb_sketch_title">*Title (same name as your zip file)</label>
+			$html .='
+				<label for="fb_sketch_title">*Title (same name as your zip file)</label>
 				<input type="text" class="widefat" name="fb_sketch_title" id="fb_sketch_title" value="'.$title.'"/>
 				<label for="fb_sketch_author">author </label>
 				<input type="text" class="widefat" name="fb_sketch_author" id="fb_sketch_author" value="'.$author.'"/>
@@ -126,6 +131,19 @@ class FB_Processing_Post_Type{
 
 
 			echo $html;
+			?>
+			
+			<p>		 
+		        <label for="fb_display_options_checkbox-radio-one">
+		            <input type="radio" name="fb_display_options_checkbox" id="fb_display_options_checkbox-one" value="yes" <?php if ( isset ( $checkbox_display['fb_display_options_checkbox'] ) ) checked( $checkbox_display['fb_display_options_checkbox'][0], 'yes' ); ?>>
+		           <label for="checkbox">Yes </label>
+		        </label>
+		        <label for="fb_display_options_checkbox-two">
+		            <input type="radio" name="fb_display_options_checkbox" id="fb_display_options_checkbox-two" value="no" <?php if ( isset ( $checkbox_display['fb_display_options_checkbox'] ) ) checked( $checkbox_display['fb_display_options_checkbox'][0], 'no' ); ?>>
+		            <label for="checkbox">No </label>
+		        </label>
+			</p>
+			<?php
 		}
 	
 		//helpers ----------------------------
