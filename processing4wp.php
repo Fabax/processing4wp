@@ -149,45 +149,44 @@ class FB_Processing_Post_Type{
 			
 			echo $html;
 		}
+	
+		//helpers ----------------------------
+		function fb_is_valid_zip($filename){
+			$path_parts = pathinfo($filename);
+			$response = false;
 
-			//helpers ----------------------------
-	function fb_is_valid_zip($filename){
-		$path_parts = pathinfo($filename);
-		$response = false;
-
-		if('zip' == strtolower($path_parts['extension'])){
-			$response = true;
-		}
-		return $response;
-	}
-	//helper that check if the user is entitled to do stuff pretty much
-	function fb_user_can_save($id, $nonce){
-		$isAutoSave = wp_is_post_autosave( $id );
-		$isRevision = wp_is_post_revision( $id );
-		$isValidNonce = (isset($_POST[$nonce]) && wp_verify_nonce($_POST[$nonce],plugin_basename(__FILE__ )));
-		return ! ($isAutoSave || $isRevision) && $isValidNonce;
-	}
-
-	function fb_unzip($zipFile,$newFolderLocation){
-		$fileToUnzip = $zipFile['tmp_name'];
-
-		$zip = new ZipArchive;
-		$res = $zip->open($fileToUnzip);
-		var_dump("ok");
-
-		if(!is_int($res)){
-			$zip->extractTo($newFolderLocation);
-	    	$zip->close();
-	    	$path = wp_upload_dir();
-	    	$path = $path['path'];
-	    	$pathToZip = $path.'/'.$zipFile['name'];
-
-	    	if(file_exists($pathToZip)){
-			    unlink($pathToZip);
+			if('zip' == strtolower($path_parts['extension'])){
+				$response = true;
 			}
-		} 
+			return $response;
+		}
+		//helper that check if the user is entitled to do stuff pretty much
+		function fb_user_can_save($id, $nonce){
+			$isAutoSave = wp_is_post_autosave( $id );
+			$isRevision = wp_is_post_revision( $id );
+			$isValidNonce = (isset($_POST[$nonce]) && wp_verify_nonce($_POST[$nonce],plugin_basename(__FILE__ )));
+			return ! ($isAutoSave || $isRevision) && $isValidNonce;
+		}
 
-	}
+		function fb_unzip($zipFile,$newFolderLocation){
+			$fileToUnzip = $zipFile['tmp_name'];
+
+			$zip = new ZipArchive;
+			$res = $zip->open($fileToUnzip);
+
+			if(!is_int($res)){
+    			$zip->extractTo($newFolderLocation);
+		    	$zip->close();
+		    	$path = wp_upload_dir();
+		    	$path = $path['path'];
+		    	$pathToZip = $path.'/'.$zipFile['name'];
+
+		    	if(file_exists($pathToZip)){
+				    unlink($pathToZip);
+				}
+			} 
+		
+		}
 
 		// ADD NEW COLUMN
 		function fb_columns_head($defaults) {
@@ -222,11 +221,11 @@ class FB_Processing_Post_Type{
 		add_action('save_post','fb_save_infos_sketch_options' );
 	}
 
-
-
 }
 
-
+function fb_add_admin_script(){
+	wp_enqueue_script('fb_admin', plugins_url('processing4wp/js/admin.js'));
+}
 
 function fb_init(){
 	new FB_Processing_Post_Type();
@@ -234,11 +233,8 @@ function fb_init(){
 	include dirname(__FILE__) . '/add-processing.php';
 }
 
-
+add_action('admin_enqueue_scripts','fb_add_admin_script');
 add_action('init','fb_init');
-
-
-
 
 
 ?>
