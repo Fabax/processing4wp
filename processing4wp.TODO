@@ -2,6 +2,9 @@ TODO Processing for wordpress
 
 Version public 
  ☐ Supression d'un dossier de sketch dans le panel d'administration
+ ✔ Maj des sketches @done (14-03-24 20:10)
+   ✔ suppression du dossier courant @done (14-03-24 20:10)
+   ✔ copy de la version original vers le dossier courant @done (14-03-24 20:10)
  ☐ Ecrire du code en plus de le fichier principal d'un sketch
    ☐ ajouter code pour la gestion de la taille
    ☐ ajouter le code pour la gestion des images dans le dossier "data"

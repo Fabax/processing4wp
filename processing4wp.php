@@ -54,11 +54,6 @@ class FB_Processing_Post_Type{
 			add_meta_box('fb_sketch_height','Sketch Options', 'fb_display_sketch_option_form', 'fb_sketch', 'side');
 		}
 
-		// routine de sauvegarde : 
-			// - supprimer le fichier principale du sketch, 
-			// - copier une version fraiche depuis le dossier de back up 
-			// - add the code needed 
-
 		function fb_save_infos_sketch_options($id){
 			if(isset($_POST['fb_sketch_title'])){
 
@@ -72,6 +67,7 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_sketch_height',strip_tags($_POST['fb_sketch_height']));
 				update_post_meta($id,'fb_sketch_width',strip_tags($_POST['fb_sketch_width']));
 				update_post_meta($id,'fb_display_options_checkbox', strip_tags($_POST[ 'fb_display_options_checkbox' ]));
+				update_post_meta($id,'fb_jprocessing_checkbox', strip_tags($_POST[ 'fb_jprocessing_checkbox' ]));
 			}
 
 			//upload du sketch
@@ -107,13 +103,12 @@ class FB_Processing_Post_Type{
 			if($maj == true){
 				$url = get_home_path() . 'wp-content/uploads/sketches/';
 				$title = get_post_meta($id, 'fb_sketch_title', true);
-				fb_before_update($url,$title);
+				
+				fb_clean_Sketch_version($url,$title,$id);
 			}
 			
 		}
 
-		// 1 - cleaner le code 
-		// 2 - afficher si un fichier à deja été uploader : ok 
 		// 3 - permettre de suprimer un dossier avec le sketch
 		// 4- ne pas montrer le forumulaire d'upload si un sketch est deja uploadé
 
@@ -126,6 +121,7 @@ class FB_Processing_Post_Type{
 			$author = get_post_meta($post->ID, 'fb_sketch_author', true);
 			$author_website = get_post_meta($post->ID, 'fb_sketch_author_website', true);
 			$checkbox_display = get_post_meta( $post->ID );
+			$checkbox_jProcessing = get_post_meta( $post->ID );
 			
 
 			$html .='
@@ -142,12 +138,6 @@ class FB_Processing_Post_Type{
 	
 			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
 
-			//if the uploaded file is invalid, make a box apear
-			//if('invalid-file-name' == get_post_meta($post->ID,'zip',true)){
-				// $html .='<div id="invalid-file-name" class="error">';
-				// 	$html .='<p>You are trying to upload a file other than a zip file</p>';
-				// $html .='</div>';
-			//}
 
 			if(display_uploaded_sketch($title)){
 				$html .="<p>sketch : <b>".$title."</b> is uploaded</p>";
@@ -169,13 +159,24 @@ class FB_Processing_Post_Type{
 		            <label for="checkbox">No </label>
 		        </label>
 			</p>
+
+			<p>		 
+				<label>Activate Jprocessing</label><br>
+		        <label for="fb_jprocessing_checkbox-radio-one">
+		            <input type="radio" name="fb_jprocessing_checkbox" id="fb_jprocessing_checkbox-one" value="yes" <?php if ( isset ( $checkbox_jProcessing['fb_jprocessing_checkbox'] ) ) checked( $checkbox_jProcessing['fb_jprocessing_checkbox'][0], 'yes' ); ?>>
+		           <label for="checkbox">Yes </label>
+		        </label>
+		        <label for="fb_jprocessing_checkbox-two">
+		            <input type="radio" name="fb_jprocessing_checkbox" id="fb_jprocessing_checkbox-two" value="no" <?php if ( isset ( $checkbox_jProcessing['fb_jprocessing_checkbox'] ) ) checked( $checkbox_jProcessing['fb_jprocessing_checkbox'][0], 'no' ); ?>>
+		            <label for="checkbox">No </label>
+		        </label>
+			</p>
 			<?php
 			
 			echo $html;
 		}
 
 		function display_uploaded_sketch($title){
-			$url = get_home_path() . 'wp-content/uploads/sketches/'.$title;
 			$bool = false;
 			if(is_dir($url)){
 				$bool = true;
@@ -215,6 +216,9 @@ class FB_Processing_Post_Type{
 		add_action('add_meta_boxes', 'fb_add_sketch_options_metabox');
 		add_action('save_post','fb_save_infos_sketch_options' );
 	}
+
+//--------------------------helpers--------------------------//
+//--------------------------------------------------------------------------//
 
 	public function helpers(){
 
@@ -262,25 +266,60 @@ class FB_Processing_Post_Type{
 		}
 	}
 
+//--------------------------changeSketchProperties--------------------------//
+//--------------------------------------------------------------------------//
+
 	public function changeSketchProperties(){
 		
-		function changeSize(){
-
-		}
-
-		function fb_before_update($url,$title){
+		function fb_clean_Sketch_version($url,$title,$id){
+			$currentFile = $url.$title.'/'.$title.'.pde';
+			$originalFile = $url.$title.'/'.$title.'/'.$title.'.pde';
 			//erase the file 
-			unlink($url.$title.'/'.$title.'.pde');
-			copy($url.$title.'/'.$title.'/'.$title.'.pde', $url.$title.'/'.$title.'.pde');
+			unlink($currentFile);
+			copy($originalFile, $currentFile);
+
+			$checkbox_jProcessing = get_post_meta( $id );
+			$bool = $checkbox_jProcessing['fb_jprocessing_checkbox'][0];
+			
+			if($bool == "yes"){
+				addJprocessing($currentFile);
+			}
+			
 		}
 
-		function deleteSketch(){
-
+		function addJprocessing($currentFile){
+			$lineToReplace = 'size(';
+			$replacement = "jProcessingJS(this);\n";
+			replace_a_line($currentFile,$lineToReplace,$replacement);
 		}
 
-		function copyOriginal(){
+		function replace_a_line($file,$lineToReplace,$replacement){
+			$reading = fopen($file, 'r');
+			$writing = fopen('myfile.tmp', 'w');
 
+			$replaced = false;
+
+			while (!feof($reading)) {
+			  $line = fgets($reading);
+			  if (stristr($line,$lineToReplace)) {
+			    $line = $replacement;
+			    $replaced = true;
+			  }
+			  fputs($writing, $line);
+			}
+			fclose($reading); fclose($writing);
+			// might as well not overwrite the file if we didn't replace anything
+			if ($replaced) 
+			{
+			  rename('myfile.tmp', $file);
+			} else {
+			  unlink('myfile.tmp');
+			}
 		}
+
+
+		
+
 	}
 }
 
