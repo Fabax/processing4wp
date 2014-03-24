@@ -64,7 +64,7 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_sketch_author_website',strip_tags($_POST['fb_sketch_author_website']));
 				update_post_meta($id,'fb_sketch_height',strip_tags($_POST['fb_sketch_height']));
 				update_post_meta($id,'fb_sketch_width',strip_tags($_POST['fb_sketch_width']));
-				update_post_meta($id,'fb_display_options_checkbox', $_POST[ 'fb_display_options_checkbox' ] );
+				update_post_meta($id,'fb_display_options_checkbox', strip_tags($_POST[ 'fb_display_options_checkbox' ]));
 			}
 
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
@@ -82,8 +82,12 @@ class FB_Processing_Post_Type{
 						$response = wp_upload_bits($zipFile['name'],null,file_get_contents($zipFile['tmp_name'])); 
 						if(0 == strlen(trim($response['error']))){
 							update_post_meta($id,'zip',$response['url']);
-							$url = get_home_path() . 'wp-content/uploads/sketches/';
-							fb_unzip($zipFile, $url);
+							$url1 = get_home_path() . 'wp-content/uploads/sketches/';
+							$nameFolderUrl2  = basename($zipFile['name'], ".zip");   
+							$url2 = get_home_path() . 'wp-content/uploads/sketches/'.$nameFolderUrl2.'/';
+
+							fb_unzip($zipFile, $url1);
+							fb_unzip($zipFile, $url2);
 						}
 					}else{
 						update_post_meta($id,'zip','invalid-file-name');
@@ -129,10 +133,7 @@ class FB_Processing_Post_Type{
 			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
 			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 
-
-			echo $html;
 			?>
-			
 			<p>		 
 				<label>Display sketch informations</label><br>
 		        <label for="fb_display_options_checkbox-radio-one">
@@ -145,6 +146,8 @@ class FB_Processing_Post_Type{
 		        </label>
 			</p>
 			<?php
+			
+			echo $html;
 		}
 	
 		//helpers ----------------------------
@@ -221,7 +224,7 @@ class FB_Processing_Post_Type{
 }
 
 function fb_add_admin_script(){
-	wp_enqueue_script('fb_admin', plugins_url('processing4wp-pro/js/admin.js'));
+	wp_enqueue_script('fb_admin', plugins_url('processing4wp/js/admin.js'));
 }
 
 function fb_init(){

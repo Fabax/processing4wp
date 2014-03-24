@@ -22,7 +22,6 @@ add_shortcode('processing', function($args){
 				$height = $post['fb_sketch_height'][0];
 				$author = $post['fb_sketch_author'][0];
 				$author_website = $post['fb_sketch_author_website'][0];
-				
 				$display_options = $post['fb_display_options_checkbox'][0];
 
 				$sketch_title = get_the_title($query->ID);
