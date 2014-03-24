@@ -54,6 +54,10 @@ class FB_Processing_Post_Type{
 			add_meta_box('fb_sketch_height','Sketch Options', 'fb_display_sketch_option_form', 'fb_sketch', 'side');
 		}
 
+		// routine de sauvegarde : 
+			// - supprimer le fichier principale du sketch, 
+			// - copier une version fraiche depuis le dossier de back up 
+			// - add the code needed 
 		function fb_save_infos_sketch_options($id){
 			if(isset($_POST['fb_sketch_title'])){
 
@@ -67,6 +71,7 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_display_options_checkbox', strip_tags($_POST[ 'fb_display_options_checkbox' ]));
 			}
 
+			//upload du sketch. 
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
 
 				if(isset($_POST['fb_sketch_title_good']) && 0 < count(strlen(trim($_POST['fb_sketch_title_good'])))){
@@ -94,8 +99,12 @@ class FB_Processing_Post_Type{
 					}
 				}
 			}
-			
 		}
+
+		// 1 - cleaner le code 
+		// 2 - afficher si un fichier à deja été uploader 
+		// 3 - permettre de suprimer un dossier avec le sketch
+		// 4- ne pas montrer le forumulaire d'upload si un sketch est deja uploadé
 
 		function fb_display_sketch_option_form($post){
 			$meta_element_class = get_post_meta($post->ID, 'fb_sketch_size_options_meta_box', true); //true ensures you get just one value instead of an array
@@ -127,13 +136,19 @@ class FB_Processing_Post_Type{
 				$html .='<div id="invalid-file-name" class="error">';
 					$html .='<p>You are trying to upload a file other than a zip file</p>';
 				$html .='</div>';
+			}
 
+			if(display_uploaded_sketch($title)){
+				$html .="<p>sketch : ".$title." is uploaded</p>";
+				$html .='<a id="fb_remove_sketch">remove sketch</a>';
+			}else {
+				$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
+				$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 			}
 			//display the form
-			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
-
+			
 			?>
+
 			<p>		 
 				<label>Display sketch informations</label><br>
 		        <label for="fb_display_options_checkbox-radio-one">
@@ -148,6 +163,21 @@ class FB_Processing_Post_Type{
 			<?php
 			
 			echo $html;
+		}
+
+		function display_uploaded_sketch($title){
+			$url = get_home_path() . 'wp-content/uploads/sketches/'.$title;
+			$bool = false;
+			if(is_dir($url)){
+				$bool = true;
+			}
+			return $bool;
+		}
+
+		function remove_sketch_folder($title){
+			if (is_dir($title)) {
+			   rmdir($title);
+			}
 		}
 	
 		//helpers ----------------------------
