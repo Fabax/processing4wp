@@ -13,7 +13,8 @@ class FB_Processing_Post_Type{
 	public function __construct(){	
 		$this->register_post_type();
 		$this->metaboxes();
-
+		$this->helpers();
+		$this->changeSketchProperties();
 	}
 
 	public function register_post_type(){
@@ -46,7 +47,6 @@ class FB_Processing_Post_Type{
 
 		register_post_type('fb_sketch', $args);
 	}
-
 	// Appearance of the control panel for the sketches
 	public function metaboxes(){
 		//Metabox pour les infos du sketch ----------------------------
@@ -58,10 +58,13 @@ class FB_Processing_Post_Type{
 			// - supprimer le fichier principale du sketch, 
 			// - copier une version fraiche depuis le dossier de back up 
 			// - add the code needed 
+
 		function fb_save_infos_sketch_options($id){
 			if(isset($_POST['fb_sketch_title'])){
 
 			}
+
+			//peristence des données dans le panel d'administration
 			if(isset($_POST['fb_sketch_height']) || isset($_POST['fb_sketch_width']) || isset($_POST['fb_sketch_author']) || isset($_POST['fb_sketch_author_website'])){
 				update_post_meta($id,'fb_sketch_title',strip_tags($_POST['fb_sketch_title']));
 				update_post_meta($id,'fb_sketch_author',strip_tags($_POST['fb_sketch_author']));
@@ -71,15 +74,19 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_display_options_checkbox', strip_tags($_POST[ 'fb_display_options_checkbox' ]));
 			}
 
-			//upload du sketch. 
+			//upload du sketch
 			if(fb_user_can_save($id, 'fb_upload_nonce_field')){
 
 				if(isset($_POST['fb_sketch_title_good']) && 0 < count(strlen(trim($_POST['fb_sketch_title_good'])))){
 					$fb_sketch_title_good = stripcslashes(strip_tags($_POST['fb_sketch_title_good']));
 					update_post_meta($id,'fb_sketch_title_good',strip_tags($_POST['fb_sketch_title_good']));
 				}
+
 				//upload happens here
 				$zipFile = $_FILES['fb_zip_file'];
+				$nameFolderUrl2  = basename($zipFile['name'], ".zip"); 
+				$url2 = get_home_path() . 'wp-content/uploads/sketches/'.$nameFolderUrl2.'/';  
+				$url1 = get_home_path() . 'wp-content/uploads/sketches/';
 
 				if(isset($zipFile) && ! empty($zipFile)){
 					//check if file is a zip
@@ -87,10 +94,6 @@ class FB_Processing_Post_Type{
 						$response = wp_upload_bits($zipFile['name'],null,file_get_contents($zipFile['tmp_name'])); 
 						if(0 == strlen(trim($response['error']))){
 							update_post_meta($id,'zip',$response['url']);
-							$url1 = get_home_path() . 'wp-content/uploads/sketches/';
-							$nameFolderUrl2  = basename($zipFile['name'], ".zip");   
-							$url2 = get_home_path() . 'wp-content/uploads/sketches/'.$nameFolderUrl2.'/';
-
 							fb_unzip($zipFile, $url1);
 							fb_unzip($zipFile, $url2);
 						}
@@ -99,10 +102,18 @@ class FB_Processing_Post_Type{
 					}
 				}
 			}
+
+			$maj = true;
+			if($maj == true){
+				$url = get_home_path() . 'wp-content/uploads/sketches/';
+				$title = get_post_meta($id, 'fb_sketch_title', true);
+				fb_before_update($url,$title);
+			}
+			
 		}
 
 		// 1 - cleaner le code 
-		// 2 - afficher si un fichier à deja été uploader 
+		// 2 - afficher si un fichier à deja été uploader : ok 
 		// 3 - permettre de suprimer un dossier avec le sketch
 		// 4- ne pas montrer le forumulaire d'upload si un sketch est deja uploadé
 
@@ -132,19 +143,17 @@ class FB_Processing_Post_Type{
 			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
 
 			//if the uploaded file is invalid, make a box apear
-			if('invalid-file-name' == get_post_meta($post->ID,'zip',true)){
-				$html .='<div id="invalid-file-name" class="error">';
-					$html .='<p>You are trying to upload a file other than a zip file</p>';
-				$html .='</div>';
-			}
+			//if('invalid-file-name' == get_post_meta($post->ID,'zip',true)){
+				// $html .='<div id="invalid-file-name" class="error">';
+				// 	$html .='<p>You are trying to upload a file other than a zip file</p>';
+				// $html .='</div>';
+			//}
 
 			if(display_uploaded_sketch($title)){
-				$html .="<p>sketch : ".$title." is uploaded</p>";
-				$html .='<a id="fb_remove_sketch">remove sketch</a>';
-			}else {
-				$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-				$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
+				$html .="<p>sketch : <b>".$title."</b> is uploaded</p>";
 			}
+			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
+			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 			//display the form
 			
 			?>
@@ -172,50 +181,6 @@ class FB_Processing_Post_Type{
 				$bool = true;
 			}
 			return $bool;
-		}
-
-		function remove_sketch_folder($title){
-			if (is_dir($title)) {
-			   rmdir($title);
-			}
-		}
-	
-		//helpers ----------------------------
-		function fb_is_valid_zip($filename){
-			$path_parts = pathinfo($filename);
-			$response = false;
-
-			if('zip' == strtolower($path_parts['extension'])){
-				$response = true;
-			}
-			return $response;
-		}
-		//helper that check if the user is entitled to do stuff pretty much
-		function fb_user_can_save($id, $nonce){
-			$isAutoSave = wp_is_post_autosave( $id );
-			$isRevision = wp_is_post_revision( $id );
-			$isValidNonce = (isset($_POST[$nonce]) && wp_verify_nonce($_POST[$nonce],plugin_basename(__FILE__ )));
-			return ! ($isAutoSave || $isRevision) && $isValidNonce;
-		}
-
-		function fb_unzip($zipFile,$newFolderLocation){
-			$fileToUnzip = $zipFile['tmp_name'];
-
-			$zip = new ZipArchive;
-			$res = $zip->open($fileToUnzip);
-
-			if(!is_int($res)){
-    			$zip->extractTo($newFolderLocation);
-		    	$zip->close();
-		    	$path = wp_upload_dir();
-		    	$path = $path['path'];
-		    	$pathToZip = $path.'/'.$zipFile['name'];
-
-		    	if(file_exists($pathToZip)){
-				    unlink($pathToZip);
-				}
-			} 
-		
 		}
 
 		// ADD NEW COLUMN
@@ -251,6 +216,72 @@ class FB_Processing_Post_Type{
 		add_action('save_post','fb_save_infos_sketch_options' );
 	}
 
+	public function helpers(){
+
+		function remove_sketch_folder($title){
+			if (is_dir($title)) {
+			   rmdir($title);
+			}
+		}
+	
+		function fb_is_valid_zip($filename){
+			$path_parts = pathinfo($filename);
+			$response = false;
+
+			if('zip' == strtolower($path_parts['extension'])){
+				$response = true;
+			}
+			return $response;
+		}
+	
+		function fb_user_can_save($id, $nonce){
+			$isAutoSave = wp_is_post_autosave( $id );
+			$isRevision = wp_is_post_revision( $id );
+			$isValidNonce = (isset($_POST[$nonce]) && wp_verify_nonce($_POST[$nonce],plugin_basename(__FILE__ )));
+			return ! ($isAutoSave || $isRevision) && $isValidNonce;
+		}
+
+		function fb_unzip($zipFile,$newFolderLocation){
+			$fileToUnzip = $zipFile['tmp_name'];
+
+			$zip = new ZipArchive;
+			$res = $zip->open($fileToUnzip);
+
+			if(!is_int($res)){
+    			$zip->extractTo($newFolderLocation);
+		    	$zip->close();
+		    	$path = wp_upload_dir();
+		    	$path = $path['path'];
+		    	$pathToZip = $path.'/'.$zipFile['name'];
+
+		    	if(file_exists($pathToZip)){
+				    unlink($pathToZip);
+				}
+			} 
+		
+		}
+	}
+
+	public function changeSketchProperties(){
+		
+		function changeSize(){
+
+		}
+
+		function fb_before_update($url,$title){
+			//erase the file 
+			unlink($url.$title.'/'.$title.'.pde');
+			copy($url.$title.'/'.$title.'/'.$title.'.pde', $url.$title.'/'.$title.'.pde');
+		}
+
+		function deleteSketch(){
+
+		}
+
+		function copyOriginal(){
+
+		}
+	}
 }
 
 function fb_add_admin_script(){
