@@ -136,18 +136,10 @@ class FB_Processing_Post_Type{
 				<label for="fb_sketch_height">Height </label>
 				<input type="text" class="widefat" name="fb_sketch_height" id="fb_sketch_height" value="'.$height.'"/>';
 	
-			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
-
-
-			if(display_uploaded_sketch($title)){
-				$html .="<p>sketch : <b>".$title."</b> is uploaded</p>";
-			}
-			$html .='<p>Make sure you upload a complete processing project as a zip file</p>';
-			$html .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 			//display the form
-			
+			echo $html;
 			?>
-
+			<hr>
 			<p>		 
 				<label>Display sketch informations</label><br>
 		        <label for="fb_display_options_checkbox-radio-one">
@@ -171,9 +163,17 @@ class FB_Processing_Post_Type{
 		            <label for="checkbox">No </label>
 		        </label>
 			</p>
+			<hr>
 			<?php
+
+			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
+			if(display_uploaded_sketch($title)){
+				$html2 .="<p>sketch : <b>".$title."</b> is uploaded</p>";
+			}
+			$html2 .='<p>Make sure you upload a complete processing project as a zip file</p>';
+			$html2 .='<input type="file" id="fb_zip_file" name="fb_zip_file" value="">';
 			
-			echo $html;
+			echo $html2;
 		}
 
 		function display_uploaded_sketch($title){
