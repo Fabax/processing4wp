@@ -22,9 +22,10 @@ add_shortcode('processing', function($args){
 				$height = $post['fb_sketch_height'][0];
 				$author = $post['fb_sketch_author'][0];
 				$author_website = $post['fb_sketch_author_website'][0];
+				$display_options = $post['fb_display_options_checkbox'][0];
+				$dowload = $post['fb_dowload_checkbox'][0];
 				$sketch_title = get_the_title($query->ID);
 				$sketch_content = get_the_content();
-				
 				$fb_file_paths = 'wp-content/uploads/sketches/'.$title.'/';
 
 				if (is_dir($fb_file_paths)) {
@@ -41,15 +42,20 @@ add_shortcode('processing', function($args){
 				        closedir($dh);
 				    }
 				}
-									
-				$output .= '<canvas id="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
-				if($author != ""){
+
+				$output .= '<canvas id="fb_sketch"" class="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
+				if($display_options == "yes"){			
 					$output .='<p> <b>'.$sketch_title.'</b> developed by : <a target="blank" href="'.$author_website.'">'.$author.'</a></p>';
-				}
-				if($sketch_content != ""){
 					$output .='<p><b>Description </b>: '.$sketch_content.'</p>';
-				}			
+				}
+
+				if($dowload == "yes"){
+					$output .='<a href="'.$fb_file_paths.$title.'.zip" target="_blank">Download</a>';
+				}
 			}
+			// else{
+			// 	$output =  "this sketch does not exist";
+			// }
 		}
 	}
 
