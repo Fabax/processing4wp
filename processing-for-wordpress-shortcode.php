@@ -43,15 +43,26 @@ add_shortcode('processing', function($args){
 				    }
 				}
 
-				$output .= '<canvas id="fb_sketch"" class="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
-				if($display_options == "yes"){			
-					$output .='<p> <b>'.$sketch_title.'</b> developed by : <a target="blank" href="'.$author_website.'">'.$author.'</a></p>';
-					$output .='<p><b>Description </b>: '.$sketch_content.'</p>';
+				$output .= '<div style="width:'.$width.'; "><canvas id="fb_sketch"" class="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
+				if($display_options == "yes"){	
+					if(!$sketch_content == ""){
+						$output .='<p style="margin:auto;text-align:center">"'.$sketch_content.'"</p>';
+					}
+							
+					$output .='<p"><b>'.$sketch_title.'</b  > developed by : <a color:white; target="blank" href="'.$author_website.'">'.$author.'</a>';
+					
+					if($dowload == "yes"){
+						$output .='<a style="float:right;"href="'.$fb_file_paths.$title.'.zip" target="_blank">Download</a></div></p>';
+					}else{
+						$output .='</p>';
+					}
+				}else{
+					if($dowload == "yes"){
+						$output .='<a href="'.$fb_file_paths.$title.'.zip" target="_blank">Download</a>';
+					}
 				}
 
-				if($dowload == "yes"){
-					$output .='<a href="'.$fb_file_paths.$title.'.zip" target="_blank">Download</a>';
-				}
+				
 			}
 			// else{
 			// 	$output =  "this sketch does not exist";
