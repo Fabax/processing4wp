@@ -25,11 +25,13 @@ jQuery(document).ready(function($) {
                                 $("#fb_sketch_options .hndle").css("background-color","green");
                                 $("#fb_remove_sketch").show();
                                 $("#fb_zip_file").hide();
+                                $(".fb_zip_fin_text").hide();
                             
                             }else if (data =="false0"){
                                 $("#fb_sketch_options .hndle").css("background-color","red");
                                 $("#fb_remove_sketch").hide();
                                 $("#fb_zip_file").show();
+                                $(".fb_zip_fin_text").show();
          
                             }
                             

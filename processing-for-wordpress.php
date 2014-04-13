@@ -3,7 +3,7 @@
 Plugin Name: Processing for wordpress
 Plugin URI: http://tutorpocessing.com
 Description: Processing maanger allow you to simply add and integrate processing sketches to your website.
-Version: 1.0
+Version: 1.4
 Author: Fabax
 Author URI: http://tutoprocessing.com
 License: A "Slug" license name e.g. GPL2
@@ -40,7 +40,7 @@ class FB_Processing_Post_Type{
 			),
 			'public' => true,
 			'menu_position' => 5,
-			'menu_icon' => content_url(). '/plugins/processing-for-wordpress/img/icon-grey.png',
+			'menu_icon' => content_url(). '/plugins/processing4wp/img/icon-grey.png',
 			'supports' => array(
 				'title',
 				'thumbnail',
@@ -193,10 +193,11 @@ class FB_Processing_Post_Type{
 		            <input type="radio" name="fb_dowload_checkbox" id="fb_dowload_checkbox-two" value="no" <?php if ( isset ( $checkbox_jProcessing['fb_dowload_checkbox'] ) ) checked( $checkbox_jProcessing['fb_dowload_checkbox'][0], 'no' ); ?>>
 		            <label for="checkbox">No </label>
 		        </label>
+
 			</div>
-			<r>
+		
 			</div>
-			<hr>
+			
 			<?php
 
 			wp_nonce_field(plugin_basename(__FILE__), 'fb_upload_nonce_field');
@@ -205,8 +206,8 @@ class FB_Processing_Post_Type{
 			}
 			
 			$html2 .='<input style="margin-top:20px;" type="file" id="fb_zip_file" name="fb_zip_file" value="">';
-			$html2 .='<p>Make sure you upload a complete processing project as a zip file</p>';
-			$html2 .='<a id="fb_remove_sketch">remove sketch</a></div>';
+			$html2 .='<p class="fb_zip_fin_text">Make sure you upload a complete processing project as a zip file</p>';
+			$html2 .='<button id="fb_remove_sketch">remove sketch</button></div>';
 			
 			echo $html2;
 		}
@@ -228,8 +229,8 @@ class FB_Processing_Post_Type{
 		// SHOW THE FEATURED IMAGE
 		function fb_columns_content($column_name, $post_ID) {
 		    if ($column_name == 'shortcode') {
-		    	$title = get_post_meta($post_ID, 'title', true);
-		    	echo $shortcode = '[processing sketch="'.get_the_title($post_ID).'"]';
+		    	$title = get_post_meta($post_ID, 'fb_sketch_title', true);
+		    	echo $shortcode = '[processing sketch="'.$title.'"]';
 		    }
 		}
 
