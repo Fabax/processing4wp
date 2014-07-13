@@ -403,8 +403,10 @@ class FB_Processing_Post_Type{
 			$imageNumber = sizeof($imageNames);
 
 			$type = "partial";
+			$upload_dir_path = wp_upload_dir();
 			for ($i=0; $i < $imageNumber; $i++) { 
-				$replacement = 'wp-content/uploads/sketches/'.$sketchTitle.'/'.$imageNames[$i];
+				
+				$replacement = $upload_dir_path['baseurl'].'/sketches/'.$sketchTitle.'/'.$imageNames[$i];
 				replaceLine($currentFile,$imageNames[$i],$replacement, $type);
 			}
 		}
