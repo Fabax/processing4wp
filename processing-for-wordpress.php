@@ -56,12 +56,12 @@ class FB_Processing_Post_Type{
 		//Metabox pour les infos du sketch ----------------------------
 		function fb_add_sketch_options_metabox(){
 			add_meta_box('fb_sketch_options','Sketch Options', 'fb_display_sketch_option_form', 'fb_sketch', 'side');
+			add_meta_box('fb_sketch_css','Custom Css', 'fb_display_sketch_custom_css', 'fb_sketch', 'side');
 		}
 
-		function fb_save_infos_sketch_options($id){
-			if(isset($_POST['fb_sketch_title'])){
 
-			}
+
+		function fb_save_infos_sketch_options($id){
 
 			//peristence des données dans le panel d'administration
 			if(isset($_POST['fb_sketch_height']) || isset($_POST['fb_sketch_width']) || isset($_POST['fb_sketch_author']) || isset($_POST['fb_sketch_author_website'])){
@@ -133,6 +133,43 @@ class FB_Processing_Post_Type{
 			
 		}
 
+		function fb_display_sketch_custom_css($post){
+			$custom_css = get_post_meta( $post->ID );
+			$custom_css_text_area = get_post_meta($post->ID, 'fb_custom_css_text_area', true);
+			$title = get_post_meta($post->ID, 'fb_sketch_title', true);
+			?>
+			<div style="width:100%;float:left;">		 
+				<label style="font-size:10px;"><b>Enable custom css</b></label><br>
+		        <label for="fb_custom_css_checkbox-radio-one">
+		            <input type="radio" name="fb_custom_css_checkbox" id="fb_custom_css_checkbox-one" value="yes" <?php if ( isset ( $custom_css['fb_custom_css_checkbox'] ) ) checked( $custom_css['fb_custom_css_checkbox'][0], 'yes' ); ?>>
+		           <label for="checkbox">Yes </label>
+		        </label>
+		        <label for="fb_custom_css_checkbox-two">
+		            <input type="radio" name="fb_custom_css_checkbox" id="fb_custom_css_checkbox-two" value="no" <?php if ( isset ( $custom_css['fb_custom_css_checkbox'] ) ) checked( $custom_css['fb_custom_css_checkbox'][0], 'no' ); ?>>
+		            <label for="checkbox">No </label>
+		        </label>
+			</div>
+			
+			<?php
+			echo '<textarea placeholder="write custom css here" cols="30" rows="20" class="widefat" name="fb_custom_css_text_area" id="fb_custom_css_text_area" >'.$custom_css_text_area.'</textarea>';
+			echo '<div>
+			<h4>references</h4>
+			<ul style="font-size:10px;background-color: lightgreen;">
+			<li><b>sketch hook</b> : #fb_'.$title.'</li>
+			<li><b>sketch informations</b> : #fb_'.$title.'_informations</li>
+			<li><b>sketch author</b> : #fb_'.$title.'_informations_author</li>
+			<li><b>sketch title</b> : #fb_'.$title.'_informations_title</li>
+			<li><b>sketch dowload button</b> : #fb_'.$title.'_dowload</li>
+			</ul>
+			</div>';
+			 
+			
+		}
+
+		function fb_save_custom_css($id){
+			update_post_meta($id,'fb_custom_css_checkbox', strip_tags($_POST[ 'fb_custom_css_checkbox' ]));
+			update_post_meta($id,'fb_custom_css_text_area',strip_tags($_POST['fb_custom_css_text_area']));
+		}
 
 		function fb_display_sketch_option_form($post){
 			$meta_element_class = get_post_meta($post->ID, 'fb_sketch_size_options_meta_box', true); //true ensures you get just one value instead of an array
@@ -263,6 +300,7 @@ class FB_Processing_Post_Type{
 		//link metaboxes to the wordpress admin 		
 		add_action('add_meta_boxes', 'fb_add_sketch_options_metabox');
 		add_action('save_post','fb_save_infos_sketch_options' );
+		add_action('save_post','fb_save_custom_css' );
 		//fields metabox
 	}
 
