@@ -5,9 +5,12 @@ add_shortcode('processing', function($args){
 	$query = new WP_Query(
 		array(
 			'post_type' => 'fb_sketch', 
-			'orderby' => 'title'
+			'orderby' => 'title',
+			'name' => $sketch
 		)
 	);
+
+
 
 
 	if($query->have_posts()){
@@ -26,24 +29,33 @@ add_shortcode('processing', function($args){
 				$dowload = $post['fb_dowload_checkbox'][0];
 				$sketch_title = get_the_title($query->ID);
 				$sketch_content = get_the_content();
-				$fb_file_paths = 'wp-content/uploads/sketches/'.$title.'/';
+				
+				$upload_dir_path = wp_upload_dir(); 
+				$upload_dir = $upload_dir_path['basedir'];
+				
+				$fb_file_paths = $upload_dir_path['basedir'].'/sketches/'.$title.'/';
+				$fb_file_url = $upload_dir_path['baseurl'].'/sketches/'.$title.'/';
 
-				if (is_dir($fb_file_paths)) {
+				$fb_file_url_final = '';
+
+				if(file_exists($fb_file_paths)){
 					
-				    if ($dh = opendir($fb_file_paths)) {   
-				        while (($file = readdir($dh)) !== false) {
-				        	if ($file != "." && $file != ".." ) {
-				        		$ext = pathinfo($file, PATHINFO_EXTENSION);
-				        		if($ext == 'pde'){
-				        			$sketch_path .= $fb_file_paths.$file . " ";
-				        		}
-				        	}
-				        }
-				        closedir($dh);
-				    }
+					$dir = opendir($fb_file_paths); 
+
+					while($file = readdir($dir)) {
+						if($file != '.' && $file != '..' && !is_dir($fb_file_paths.$file))
+						{
+							$ext = pathinfo($file, PATHINFO_EXTENSION);
+
+			        		if($ext == 'pde'){
+			        			$fb_file_url_final .= $fb_file_url . $file . " ";
+			        		}
+						}
+					}
+
 				}
 
-				$output .= '<div style="width:'.$width.'; "><canvas id="fb_sketch"" class="'.$sketch_title.'" data-processing-sources="'.$sketch_path.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
+				$output .= '<div style="width:'.$width.'; "><canvas id="fb_sketch" class="'.$sketch_title.'" data-processing-sources="'.$fb_file_url_final.'" style=" position:relative;float:left; width:'.$width.';height:'.$height.';"></canvas>';
 				if($display_options == "yes"){	
 					if(!$sketch_content == ""){
 						$output .='<p style="margin:auto;text-align:center">"'.$sketch_content.'"</p>';

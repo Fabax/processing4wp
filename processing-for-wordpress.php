@@ -36,7 +36,7 @@ class FB_Processing_Post_Type{
 			),
 			'query_var' => 'sketches',
 			'rewrite' => array(
-				'slug' => 'sketches/',
+				'slug' => 'sketches',
 			),
 			'public' => true,
 			'menu_position' => 5,
@@ -73,6 +73,7 @@ class FB_Processing_Post_Type{
 				update_post_meta($id,'fb_sketch_width',strip_tags($_POST['fb_sketch_width']));
 				update_post_meta($id,'fb_display_options_checkbox', strip_tags($_POST[ 'fb_display_options_checkbox' ]));
 				update_post_meta($id,'fb_jprocessing_checkbox', strip_tags($_POST[ 'fb_jprocessing_checkbox' ]));
+				update_post_meta($id,'fb_jprocessing_checkbox_two', strip_tags($_POST[ 'fb_jprocessing_checkbox_two' ]));
 				update_post_meta($id,'fb_dowload_checkbox', strip_tags($_POST[ 'fb_dowload_checkbox' ]));
 	
 
@@ -195,6 +196,17 @@ class FB_Processing_Post_Type{
 		        </label>
 
 			</div>
+				<div style="width:50%;float:left;">		 
+				<label style="font-size:10px;"><b>Enable full screen</b></label><br>
+		        <label for="fb_jprocessing_checkbox_two-radio-one">
+		            <input type="radio" name="fb_jprocessing_checkbox_two" id="fb_jprocessing_checkbox_two-one" value="yes" <?php if ( isset ( $checkbox_jProcessing['fb_jprocessing_checkbox_two'] ) ) checked( $checkbox_jProcessing['fb_jprocessing_checkbox_two'][0], 'yes' ); ?>>
+		           <label for="checkbox">Yes </label>
+		        </label>
+		        <label for="fb_jprocessing_checkbox_two-two">
+		            <input type="radio" name="fb_jprocessing_checkbox_two" id="fb_jprocessing_checkbox_two-two" value="no" <?php if ( isset ( $checkbox_jProcessing['fb_jprocessing_checkbox_two'] ) ) checked( $checkbox_jProcessing['fb_jprocessing_checkbox_two'][0], 'no' ); ?>>
+		            <label for="checkbox">No </label>
+		        </label>
+			</div>
 		
 			</div>
 			
@@ -310,6 +322,7 @@ class FB_Processing_Post_Type{
 			$images = get_post_meta($id, 'fb_sketch_images', true);
 			$checkbox = get_post_meta( $id );
 			$jprocessing_bool = $checkbox['fb_jprocessing_checkbox'][0];
+			$jprocessing_bool_fc = $checkbox['fb_jprocessing_checkbox_two'][0];
 			//$passing_bool = $checkbox['fb_passing_function_checkbox'][0];
 			
 			//Path to forlders and files
@@ -329,17 +342,22 @@ class FB_Processing_Post_Type{
 					}
 					//activate responsive
 					if($jprocessing_bool == "yes"){
-						addJprocessing($currentFile);
+						$replacement = "jProcessingJS(this);\n";
+						addJprocessing($currentFile, $replacement);
+					}
+
+					if($jprocessing_bool_fc == "yes"){
+						$replacement = "jProcessingJS(this, {fullscreen:true});\n";
+						addJprocessing($currentFile, $replacement);
 					}
 				}
 			}
 		}
 
-		function addJprocessing($currentFile){
-			$lineToReplace = 'size(';
-			$replacement = "jProcessingJS(this);\n";
+		function addJprocessing($currentFile, $replacement){
+			$pattern = "(size\((.*?)\)\s*?;)";
 			$type = "total";
-			replaceLine($currentFile,$lineToReplace,$replacement,$type);
+			replaceLine($currentFile,$pattern,$replacement,$type);
 		}
 
 		function replaceImagesPaths($sketchTitle, $currentFile,$imageString){
@@ -362,16 +380,19 @@ class FB_Processing_Post_Type{
 			while (!feof($reading)) {
 			  $line = fgets($reading);
 			  if (stristr($line,$lineToReplace)) {
-			  	if($type == "partial"){
+			  	if($type == "partial"){	
 			  		$line = str_replace($lineToReplace, $replacement, $line);
 			  		$replaced = true;
-			  	}else if($type == "total"){
-			  		$line = $replacement;
+			  	}
+			  }else if ( preg_match($lineToReplace,$line)) {
+			  	if($type == "total"){
+			  		$line = preg_replace($lineToReplace, $replacement, $line);
 			    	$replaced = true;
 			  	}
 			  }
 			  fputs($writing, $line);
 			}
+
 			fclose($reading); fclose($writing);
 			// might as well not overwrite the file if we didn't replace anything
 			if ($replaced) 
